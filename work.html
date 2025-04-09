@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn Hindi - Interactive Beginner's Course</title>
+    <style>
+        :root {
+            --primary: #FF9933;
+            --secondary: #138808;
+            --accent: #000080;
+            --light: #f8f9fa;
+            --dark: #343a40;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), white, var(--secondary));
+            color: var(--dark);
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        
+        .tab-button {
+            background-color: #fff;
+            border: none;
+            padding: 10px 20px;
+            margin-right: 5px;
+            cursor: pointer;
+            border-radius: 5px 5px 0 0;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .tab-button:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .tab-button.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background-color: white;
+            border-radius: 0 5px 5px 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .language-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+        
+        .language-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        .flashcard {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            text-align: center;
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            perspective: 1000px;
+        }
+        
+        .flashcard-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        
+        .flipped .flashcard-inner {
+            transform: rotateY(180deg);
+        }
+        
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        
+        .flashcard-back {
+            transform: rotateY(180deg);
+        }
+        
+        .hindi {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .roman {
+            font-size: 1.2rem;
+            color: var(--accent);
+        }
+        
+        .pronunciation-btn {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .quiz-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        
+        .quiz-question {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+        
+        .quiz-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .quiz-option {
+            background-color: #f0f0f0;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .quiz-option:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .quiz-option.selected {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .quiz-option.correct {
+            background-color: var(--secondary);
+            color: white;
+            border-color: var(--secondary);
+        }
+        
+        .quiz-option.incorrect {
+            background-color: #ff6b6b;
+            color: white;
+            border-color: #ff6b6b;
+        }
+        
+        .check-answer-btn {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        
+        .conversation-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .conversation-header {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--accent);
+        }
+        
+        .conversation-line {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .conversation-line:nth-child(odd) {
+            background-color: #f0f0f0;
+        }
+        
+      
+        
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            height: 100px;
+            margin-bottom: 10px;
+        }
+        
+        .check-practice-btn {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .alphabet-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+        
+        .alphabet-card {
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 5px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .alphabet-card:hover {
+            transform: scale(1.05);
+            background-color: #f0f0f0;
+        }
+        
+        @media (max-width: 768px) {
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab-button {
+                border-radius: 5px;
+                margin-bottom: 5px;
+            }
+            
+            .quiz-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .alphabet-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>नमस्ते! Learn Hindi</h1>
+        <p>Interactive Beginner's Course</p>
+    </header>
+    
+    <div class="container">
+        <div class="tabs">
+            <button class="tab-button active" onclick="openTab('alphabet')">Alphabet</button>
+            <button class="tab-button" onclick="openTab('vocabulary')">Vocabulary</button>
+            <button class="tab-button" onclick="openTab('conversation')">Conversations</button>
+           
+            <button class="tab-button" onclick="openTab('quiz')">Quiz</button>
+        </div>
+        
+        <div id="alphabet" class="tab-content active">
+            <h2>Hindi Alphabet (Devanagari)</h2>
+            
+            <h3>Vowels (स्वर / Swar)</h3>
+            <div class="alphabet-grid">
+                <div class="alphabet-card">
+                    <div class="hindi">अ</div>
+                    <div class="roman">a</div>
+                </div>
+                <div class="alphabet-card">
+                    <div class="hindi">आ</div>
+                    <div class="roman">aa</div>
+                </div>
+                <div class="alphabet-card">
+                    <div class="hindi">इ</div>
+                    <div class="roman">i</div>
+                </div>
+                <div class="alphabet-card">
+                    <div class="hindi">ई</div>
+                    <div class="roman">ee</div>
+                </div>
+                <div class="alphabet-card">
+                    <div class="hindi">उ</div>
+                    <div class="roman">u</div>
+                </div>
+                <div class="alphabet-card">
+                    <div class="hindi">ऊ</div>
+                    <div class="roman">oo</div>
+                </div>
+                <div class="alphabet-card">
+                    <div class="hindi">ए</div>
+                    <div class="roman">e</div>
+                </div>
+                <div class="alphabet-card">
+                    <div class="hindi">ऐ</div>
+                    <div class="roman">ai</div>
+                </div>
+                <div class="alphabet-card">
+                    <div class="hindi">ओ</div>
+                    <div class="roman">o</div>
+                </div>
+                <div class="alphabet-card">
+                    <div class="hindi">औ</div>
+                    <div class="roman">au</div>
+                </div>
+            </div>
+            
+            <h3>Consonants (व्यंजन / Vyanjan)</h3>
+            <div class="alphabet-grid">
+                <div class="alphabet-card">
+                    <div class="hindi">क</div>
+                    <div class="roman">ka</div>
+                </div>
+                <div class="alphabet-card">
+                    <div class="hindi">ख</div>
+                    <div class="roman">kha</div>
+                </div>
+                <div class="alphabet-card">
+                    <div class="hindi">ग</div>
+                    <div class="roman">ga</div>
+                </div>
+                <div class="alphabet-card">
+                    <div class="hindi">घ</div>
+                    <div class="roman">gha</div>
+                </div>
+                <div class="alphabet-card">
+                    <div class="hindi">ङ</div>
+                    <div class="roman">nga</div>
+                </div>
+                <div class="alphabet-card">
+                    <div class="hindi">च</div>
+                    <div class="roman">cha</div>
+                </div>
+                <div class="alphabet-card">
+                    <div class="hindi">छ</div>
+                    <div class="roman">chha</div>
+                </div>
+                <div class="alphabet-card">
+                    <div class="hindi">ज</div>
+                    <div class="roman">ja</div>
+                </div>
+                <div class="alphabet-card">
+                    <div class="hindi">झ</div>
+                    <div class="roman">jha</div>
+                </div>
+                <div class="alphabet-card">
+                    <div class="hindi">ञ</div>
+                    <div class="roman">nya</div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="vocabulary" class="tab-content">
+            <h2>Basic Vocabulary</h2>
+            <p>Click on cards to flip them and see translations.</p>
+            
+            <h3>Greetings</h3>
+            <div class="flashcard" onclick="this.classList.toggle('flipped')">
+                <div class="flashcard-inner">
+                    <div class="flashcard-front">
+                        <div class="hindi">नमस्ते</div>
+                        <div class="roman">Namaste</div>
+                        <div class="roman">Helllo</div>
+                        
+                    </div>
+                    <div class="flashcard-back">
+                        <p>Hello / Greetings</p>
+                        <p>A formal and respectful greeting used throughout the day</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flashcard" onclick="this.classList.toggle('flipped')">
+                <div class="flashcard-inner">
+                    <div class="flashcard-front">
+                        <div class="hindi">धन्यवाद</div>
+                        <div class="roman">Dhanyavaad</div>
+                        <div class="roman">Thank you</div>
+                    </div>
+                    <div class="flashcard-back">
+                        <p>Thank you</p>
+                        <p>Used to express gratitude or appreciation</p>
+                    </div>
+                </div>
+            </div>
+            
+            <h3>Common Phrases</h3>
+            <div class="flashcard" onclick="this.classList.toggle('flipped')">
+                <div class="flashcard-inner">
+                    <div class="flashcard-front">
+                        <div class="hindi">आप कैसे हैं?</div>
+                        <div class="roman">Aap kaise hain?</div>
+                        <div class="roman">How are you</div>
+                    </div>
+                    <div class="flashcard-back">
+                        <p>How are you? (formal)</p>
+                        <p>Used when speaking to someone older or in a formal setting</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flashcard" onclick="this.classList.toggle('flipped')">
+                <div class="flashcard-inner">
+                    <div class="flashcard-front">
+                        <div class="hindi">मैं ठीक हूँ</div>
+                        <div class="roman">Main theek hoon</div>
+                        <div class="roman">I am fine</div>
+                    </div>
+                    <div class="flashcard-back">
+                        <p>I am fine</p>
+                        <p>A common response to "How are you?"</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="conversation" class="tab-content">
+            <h2>Everyday Conversations</h2>
+            <p>Learn through practical dialogues.</p>
+            
+            <div class="conversation-container">
+                <div class="conversation-header">Meeting Someone New</div>
+                <div class="conversation-line">
+                    <div class="hindi">राम: नमस्ते! मेरा नाम राम है।</div>
+                    <div class="roman">Ram: Namaste! Mera naam Ram hai.</div>
+                    <div class="english">Ram: Hello! My name is Ram.</div>
+                </div>
+                <div class="conversation-line">
+                    <div class="hindi">सीता: नमस्ते! मेरा नाम सीता है। आप कैसे हैं?</div>
+                    <div class="roman">Sita: Namaste! Mera naam Sita hai. Aap kaise hain?</div>
+                    <div class="english">Sita: Hello! My name is Sita. How are you?</div>
+                </div>
+                <div class="conversation-line">
+                    <div class="hindi">राम: मैं ठीक हूँ, धन्यवाद। और आप?</div>
+                    <div class="roman">Ram: Main theek hoon, dhanyavaad. Aur aap?</div>
+                    <div class="english">Ram: I am fine, thank you. And you?</div>
+                </div>
+                <div class="conversation-line">
+                    <div class="hindi">सीता: मैं भी ठीक हूँ। आप कहाँ से हैं?</div>
+                    <div class="roman">Sita: Main bhi theek hoon. Aap kahaan se hain?</div>
+                    <div class="english">Sita: I am also fine. Where are you from?</div>
+                </div>
+                <div class="conversation-line">
+                    <div class="hindi">राम: मैं दिल्ली से हूँ। आप?</div>
+                    <div class="roman">Ram: Main Delhi se hoon. Aap?</div>
+                    <div class="english">Ram: I am from Delhi. You?</div>
+                </div>
+                <div class="conversation-line">
+                    <div class="hindi">सीता: मैं मुंबई से हूँ।</div>
+                    <div class="roman">Sita: Main Mumbai se hoon.</div>
+                    <div class="english">Sita: I am from Mumbai.</div>
+                </div>
+            </div>
+            
+            <div class="conversation-container">
+                <div class="conversation-header">Ordering Food</div>
+                <div class="conversation-line">
+                    <div class="hindi">वेटर: नमस्ते, आप क्या खाना चाहेंगे?</div>
+                    <div class="roman">Waiter: Namaste, aap kya khana chahenge?</div>
+                    <div class="english">Waiter: Hello, what would you like to eat?</div>
+                </div>
+                <div class="conversation-line">
+                    <div class="hindi">ग्राहक: मैं एक पनीर तिक्का और दो नान लेना चाहता हूँ।</div>
+                    <div class="roman">Customer: Main ek paneer tikka aur do naan lena chahta hoon.</div>
+                    <div class="english">Customer: I would like to have one paneer tikka and two naan.</div>
+                </div>
+                <div class="conversation-line">
+                    <div class="hindi">वेटर: और पीने के लिए?</div>
+                    <div class="roman">Waiter: Aur peene ke liye?</div>
+                    <div class="english">Waiter: And for drinking?</div>
+                </div>
+                <div class="conversation-line">
+                    <div class="hindi">ग्राहक: एक लस्सी, धन्यवाद।</div>
+                    <div class="roman">Customer: Ek lassi, dhanyavaad.</div>
+                    <div class="english">Customer: One lassi, thank you.</div>
+                </div>
+            </div>
+        </div>
+        
+
+        <div id="quiz" class="tab-content">
+            <h2>Test Your Knowledge</h2>
+            <p>Select the correct answer for each question.</p>
+            
+            <div class="quiz-container">
+                <div class="quiz-question">1. What does "नमस्ते" (Namaste) mean?</div>
+                <div class="quiz-options">
+                    <div class="quiz-option" onclick="selectOption(this)">Thank you</div>
+                    <div class="quiz-option" onclick="selectOption(this)">Hello / Greetings</div>
+                    <div class="quiz-option" onclick="selectOption(this)">Goodbye</div>
+                    <div class="quiz-option" onclick="selectOption(this)">Sorry</div>
+                </div>
+                <button class="check-answer-btn" onclick="checkAnswer(this, 1)">Check Answer</button>
+            </div>
+            
+            <div class="quiz-container" style="margin-top: 20px;">
+                <div class="quiz-question">2. How do you say "My name is..." in Hindi?</div>
+                <div class="quiz-options">
+                    <div class="quiz-option" onclick="selectOption(this)">मैं हूँ... (Main hoon...)</div>
+                    <div class="quiz-option" onclick="selectOption(this)">मेरा नाम है... (Mera naam hai...)</div>
+                    <div class="quiz-option" onclick="selectOption(this)">आप कौन हैं? (Aap kaun hain?)</div>
+                    <div class="quiz-option" onclick="selectOption(this)">मुझे बताओ (Mujhe batao)</div>
+                </div>
+                <button class="check-answer-btn" onclick="checkAnswer(this, 1)">Check Answer</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function openTab(tabName) {
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('active');
+            }
+            
+            const tabButtons = document.getElementsByClassName('tab-button');
+            for (let i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].classList.remove('active');
+            }
+            
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+        
+        function selectOption(option) {
+            const parentOptions = option.parentElement.children;
+            for (let i = 0; i < parentOptions.length; i++) {
+                parentOptions[i].classList.remove('selected');
+            }
+            option.classList.add('selected');
+        }
+        
+        function checkAnswer(button, correctIndex) {
+            const options = button.previousElementSibling.children;
+            const selectedOption = button.previousElementSibling.querySelector('.selected');
+            
+            if (!selectedOption) {
+                alert('Please select an answer first!');
+                return;
+            }
+            
+            for (let i = 0; i < options.length; i++) {
+                options[i].classList.remove('correct', 'incorrect');
+            }
+            
+            options[correctIndex].classList.add('correct');
+            
+            if (selectedOption !== options[correctIndex]) {
+                selectedOption.classList.add('incorrect');
+            }
+        }
+        
+        // Initialize all flashcards to be flippable
+        const flashcards = document.querySelectorAll('.flashcard');
+        flashcards.forEach(card => {
+            card.addEventListener('click', () => {
+                card.classList.toggle('flipped');
+            });
+        });
+    </script>
+</body>
+</html>
